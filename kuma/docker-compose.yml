@@ -1,0 +1,18 @@
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:2
+    container_name: uptime-kuma
+    restart: unless-stopped
+
+    ports:
+      - "3001:3001"
+
+    volumes:
+      - ../../data/kuma:/app/data
+
+    networks:
+      - lab-network
+
+networks:
+  lab-network:
+    external: true

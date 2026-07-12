@@ -1,0 +1,29 @@
+services:
+  odoo19:
+    image: ${ODOO_IMAGE}
+    container_name: odoo19
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    environment:
+      HOST: ${POSTGRES_HOST}
+      PORT: ${POSTGRES_PORT}
+      USER: ${POSTGRES_USER}
+      PASSWORD: ${POSTGRES_PASSWORD}
+      TZ: ${TZ}
+
+    ports:
+      - "${ODOO_PORT}:8069"
+
+    volumes:
+      - ../../data/odoo19:/var/lib/odoo
+      - ./config:/etc/odoo
+      - ./addons:/mnt/extra-addons
+    networks:
+      - lab-network
+
+networks:
+  lab-network:
+    external: true

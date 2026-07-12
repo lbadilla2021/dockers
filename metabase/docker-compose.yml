@@ -1,0 +1,18 @@
+services:
+  metabase:
+    image: metabase/metabase:v0.62.4.2
+    container_name: metabase
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    ports:
+      - "3004:3000"
+
+    networks:
+      - lab-network
+
+networks:
+  lab-network:
+    external: true

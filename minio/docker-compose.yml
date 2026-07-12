@@ -1,0 +1,51 @@
+services:
+  minio:
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    container_name: minio
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    command: server /data --console-address ":9001"
+
+    ports:
+      - "9002:9000"
+      - "9001:9001"
+
+    volumes:
+      - ../../data/minio:/data
+
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    networks:
+      - lab-network
+
+  minio-init:
+    image: minio/mc:RELEASE.2025-08-13T08-35-41Z
+    container_name: minio-init
+    restart: "no"
+
+    env_file:
+      - .env
+
+    depends_on:
+      minio:
+        condition: service_healthy
+
+    entrypoint: >
+      sh -c "
+      mc alias set local http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD} &&
+      mc mb --ignore-existing local/langfuse
+      "
+
+    networks:
+      - lab-network
+
+networks:
+  lab-network:
+    external: true

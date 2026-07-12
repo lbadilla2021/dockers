@@ -1,0 +1,21 @@
+services:
+  documenso:
+    image: documenso/documenso:v2.14.0
+    container_name: documenso
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    ports:
+      - "3005:3000"
+
+    volumes:
+      - ./certs/cert.p12:/opt/documenso/cert.p12:ro
+
+    networks:
+      - lab-network
+
+networks:
+  lab-network:
+    external: true

@@ -1,0 +1,22 @@
+services:
+  directus:
+    image: directus/directus:12.1.1
+    container_name: directus
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    ports:
+      - "8055:8055"
+
+    volumes:
+      - ../../data/directus/uploads:/directus/uploads
+      - ../../data/directus/extensions:/directus/extensions
+
+    networks:
+      - lab-network
+
+networks:
+  lab-network:
+    external: true

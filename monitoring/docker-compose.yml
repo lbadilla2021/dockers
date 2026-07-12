@@ -1,0 +1,74 @@
+services:
+  prometheus:
+    image: prom/prometheus:v3.13.0
+    container_name: prometheus
+    restart: unless-stopped
+
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../../data/prometheus:/prometheus
+
+    ports:
+      - "9090:9090"
+
+    networks:
+      - lab-network
+
+  node-exporter:
+    image: quay.io/prometheus/node-exporter:v1.11.1
+    container_name: node-exporter
+    restart: unless-stopped
+
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
+
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+
+    networks:
+      - lab-network
+
+  cadvisor:
+    image: ghcr.io/google/cadvisor:v0.60.4
+    container_name: cadvisor
+    restart: unless-stopped
+    privileged: true
+
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
+
+    networks:
+      - lab-network
+
+  grafana:
+    image: grafana/grafana:13.1.0
+    container_name: grafana
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    volumes:
+      - ../../data/grafana:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+
+    ports:
+      - "3003:3000"
+
+    depends_on:
+      - prometheus
+
+    networks:
+      - lab-network
+
+networks:
+  lab-network:
+    external: true

@@ -1,0 +1,115 @@
+---
+x-shared:
+  zammad-service: &zammad-service
+    environment: &zammad-environment
+      MEMCACHE_SERVERS: zammad-memcached:11211
+
+      POSTGRESQL_DB: ${POSTGRES_DB}
+      POSTGRESQL_HOST: ${POSTGRES_HOST}
+      POSTGRESQL_USER: ${POSTGRES_USER}
+      POSTGRESQL_PASS: ${POSTGRES_PASS}
+      POSTGRESQL_PORT: ${POSTGRES_PORT}
+      POSTGRESQL_DB_CREATE:
+
+      REDIS_URL: ${REDIS_URL}
+
+      BACKUP_DIR: /var/tmp/zammad
+      BACKUP_TIME: "03:00"
+      BACKUP_ON_START: "true"
+      HOLD_DAYS: "10"
+      TZ: ${TZ}
+
+      ZAMMAD_HTTP_TYPE: http
+      ZAMMAD_FQDN: ${ZAMMAD_FQDN}
+
+    image: ghcr.io/zammad/zammad:7.1.1-0020
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ../../data/zammad/backup:/var/tmp/zammad
+      - ../../data/zammad/storage:/opt/zammad/storage
+    depends_on:
+      zammad-memcached:
+        condition: service_healthy
+    networks:
+      - lab-network
+
+services:
+  zammad-backup:
+    <<: *zammad-service
+    container_name: zammad-backup
+    command: ["zammad-backup"]
+    volumes:
+      - ../../data/zammad/backup:/var/tmp/zammad
+      - ../../data/zammad/storage:/opt/zammad/storage
+    user: "0:0"
+
+  zammad-elasticsearch:
+    image: elasticsearch:9.4.3
+    container_name: zammad-elasticsearch
+    restart: unless-stopped
+    volumes:
+      - ../../data/zammad/elasticsearch:/usr/share/elasticsearch/data
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+    networks:
+      - lab-network
+
+  zammad-init:
+    <<: *zammad-service
+    container_name: zammad-init
+    command: ["zammad-init"]
+    restart: "no"
+    user: "0:0"
+
+  zammad-memcached:
+    image: memcached:1.6.44-alpine
+    container_name: zammad-memcached
+    restart: unless-stopped
+    command: memcached -m 256M
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "11211"]
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+    networks:
+      - lab-network
+
+  zammad-nginx:
+    <<: *zammad-service
+    container_name: zammad-nginx
+    command: ["zammad-nginx"]
+    ports:
+      - "8082:8080"
+    depends_on:
+      zammad-railsserver:
+        condition: service_healthy
+
+  zammad-railsserver:
+    <<: *zammad-service
+    container_name: zammad-railsserver
+    command: ["zammad-railsserver"]
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:3000"]
+      interval: 30s
+      timeout: 5s
+      start_period: 120s
+      retries: 3
+
+  zammad-scheduler:
+    <<: *zammad-service
+    container_name: zammad-scheduler
+    command: ["zammad-scheduler"]
+
+  zammad-websocket:
+    <<: *zammad-service
+    container_name: zammad-websocket
+    command: ["zammad-websocket"]
+
+networks:
+  lab-network:
+    external: true
