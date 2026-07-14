@@ -1,0 +1,29 @@
+services:
+  streamlit:
+    build: .
+    image: lab-streamlit:latest
+    container_name: streamlit
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    ports:
+      - "${STREAMLIT_PORT}:8501"
+
+    volumes:
+      - ./app:/app/app
+      - ../../data/streamlit:/app/data
+
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+    networks:
+      - lab-network
+
+networks:
+  lab-network:
+    external: true

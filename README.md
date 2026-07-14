@@ -34,6 +34,7 @@ si accedes desde el mismo equipo.
 | Chatwoot | `chatwoot/` | http://100.70.250.3:3007 | crear cuenta en el primer acceso |
 | Paperless-ngx | `paperless/` | http://100.70.250.3:8000 | usuario/clave en `.env` (`PAPERLESS_ADMIN_USER` / `PAPERLESS_ADMIN_PASSWORD`) |
 | Directus | `directus/` | http://100.70.250.3:8055 | usuario/clave en `.env` (`ADMIN_EMAIL` / `ADMIN_PASSWORD`) |
+| Streamlit | `streamlit/` | http://100.70.250.3:8501 | sin login |
 
 No incluido: **Cal.com** — su distribución de self-host (`cal.diy`) ya no publica una imagen
 Docker fija descargable; requiere clonar y compilar el monorepo completo. Se dejó fuera
@@ -85,4 +86,6 @@ evaluar alternativas con imagen fija (p. ej. Easy!Appointments).
 **Paperless-ngx** — digitalización documental con OCR (configurado en español): ingesta boletas, contratos y facturas, los indexa y los deja buscables.
 
 **Directus** — CMS headless sobre Postgres: panel de administración de contenido para sitios web sin depender de un desarrollador para cada cambio.
+
+**Streamlit** — contenedor base para dashboards y apps de datos en Python; punto de partida para levantar apps propias (visualización, prototipos de IA, herramientas internas) sin montar infraestructura desde cero.
 # dockers
