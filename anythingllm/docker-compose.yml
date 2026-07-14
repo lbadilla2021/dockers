@@ -1,0 +1,21 @@
+services:
+  anythingllm:
+    image: mintplexlabs/anythingllm@sha256:de3b7dfdb25b3d83776cda5c90489c36ffc9a292d53a8b04b0a28d868f1fd7d4
+    container_name: anythingllm
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    ports:
+      - "3010:3001"
+
+    volumes:
+      - ../../data/anythingllm:/app/server/storage
+
+    networks:
+      - lab-network
+
+networks:
+  lab-network:
+    external: true

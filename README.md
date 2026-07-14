@@ -35,6 +35,10 @@ si accedes desde el mismo equipo.
 | Paperless-ngx | `paperless/` | http://100.70.250.3:8000 | usuario/clave en `.env` (`PAPERLESS_ADMIN_USER` / `PAPERLESS_ADMIN_PASSWORD`) |
 | Directus | `directus/` | http://100.70.250.3:8055 | usuario/clave en `.env` (`ADMIN_EMAIL` / `ADMIN_PASSWORD`) |
 | Streamlit | `streamlit/` | http://100.70.250.3:8501 | sin login |
+| Open WebUI | `open-webui/` | http://100.70.250.3:3008 | crear cuenta en el primer acceso (queda admin) |
+| OpenHands | `openhands/` | http://100.70.250.3:3009 | sin login (⚠️ ver README: monta el docker.sock del host) |
+| AnythingLLM | `anythingllm/` | http://100.70.250.3:3010 | asistente de configuración en el primer acceso |
+| Temporal | `temporal/` | http://100.70.250.3:8083 (UI) / `100.70.250.3:7233` (gRPC) | sin login |
 
 No incluido: **Cal.com** — su distribución de self-host (`cal.diy`) ya no publica una imagen
 Docker fija descargable; requiere clonar y compilar el monorepo completo. Se dejó fuera
@@ -88,4 +92,12 @@ evaluar alternativas con imagen fija (p. ej. Easy!Appointments).
 **Directus** — CMS headless sobre Postgres: panel de administración de contenido para sitios web sin depender de un desarrollador para cada cambio.
 
 **Streamlit** — contenedor base para dashboards y apps de datos en Python; punto de partida para levantar apps propias (visualización, prototipos de IA, herramientas internas) sin montar infraestructura desde cero.
+
+**Open WebUI** — interfaz de chat tipo ChatGPT para el laboratorio; habla con todos los modelos vía LiteLLM (un solo punto de API keys y control de costos), con historial, RAG sobre documentos y multiusuario.
+
+**OpenHands** — agente de codificación autónomo: recibe tareas en lenguaje natural y escribe/ejecuta código en contenedores sandbox propios. Usa LiteLLM como backend de modelos. Monta el `docker.sock` del host (control equivalente a root sobre Docker) — ver advertencia de seguridad en su README.
+
+**AnythingLLM** — chat + RAG sobre documentos con workspaces y agentes; usa LiteLLM como backend de modelos y Qdrant (compartido) como base vectorial en vez de su almacenamiento local por defecto.
+
+**Temporal** — motor de orquestación de workflows durables (retries, timers, sagas); para automatizaciones/procesos de negocio con código real y estado persistente, complementando a n8n. Usa el Postgres compartido (bases `temporal` y `temporal_visibility`).
 # dockers

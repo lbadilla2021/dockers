@@ -24,3 +24,13 @@ CREATE DATABASE documenso OWNER documenso;
 
 CREATE USER directus WITH PASSWORD 'tbWNlKamDFFJUJs5OKZPJaVKBxWLmuLR';
 CREATE DATABASE directus OWNER directus;
+
+CREATE USER openwebui WITH PASSWORD 'gNqgfvu1KcPsL2AFCNb6DHpCTn5Uhnh';
+CREATE DATABASE openwebui OWNER openwebui;
+
+-- Temporal necesita dos bases: la de estado (temporal) y la de visibility
+-- (busqueda/listado de workflows). El esquema interno lo crea el propio
+-- admin-tools de Temporal (setup-schema/update-schema), no este script.
+CREATE USER temporal WITH PASSWORD '3bHjJ2bP7thaL8x5uCYcY54sPXttA';
+CREATE DATABASE temporal OWNER temporal;
+CREATE DATABASE temporal_visibility OWNER temporal;
